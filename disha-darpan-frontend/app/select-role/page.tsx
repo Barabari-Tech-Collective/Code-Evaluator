@@ -6,7 +6,11 @@ import { apiFetch } from "@/lib/apiClient";
 
 export default function SelectRolePage() {
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
+
+  if (status === "loading") {
+  return <div>Loading...</div>;
+  }
 
 
   const handleSelect = async (role: "STUDENT" | "FACILITATOR") => {
@@ -19,7 +23,7 @@ export default function SelectRolePage() {
     } 
 
     try {
-      const res = await apiFetch(
+      const data = await apiFetch(
         "/user/role",
         {
           method: "POST",
@@ -31,7 +35,6 @@ export default function SelectRolePage() {
         session.backendToken
       );
       
-  const data = await res.json();
 
   await update({
     backendToken: data.token,

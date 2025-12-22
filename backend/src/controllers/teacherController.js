@@ -2,9 +2,12 @@ import prisma from "../config/prisma.js";
 
 export const teacherOnboard = async (req, res) => {
   try {
-    const { name, email, colleges } = req.body;
+    const { colleges } = req.body;
+    const { userId, email } = req.user;
+    console.log("this is request body", req.body);
+    console.log("this is user details", req.user);
 
-    if (!name || !email || !Array.isArray(colleges)) {
+    if (!email || !Array.isArray(colleges)) {
       return res.status(400).json({ message: "Invalid input" });
     }
 
@@ -18,7 +21,7 @@ export const teacherOnboard = async (req, res) => {
 
     const teacher = await prisma.teacher.create({
       data: {
-        name,
+        name: user.name,
         colleges,
         userId: user.id,
       },

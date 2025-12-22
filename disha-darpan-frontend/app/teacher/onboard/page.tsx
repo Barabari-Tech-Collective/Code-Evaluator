@@ -32,7 +32,6 @@ export default function FacilitatorOnboardPage() {
         {
           method: "POST",
           body: JSON.stringify({
-            email: session.user.email,
             colleges: selectedColleges,
           }),
         },
