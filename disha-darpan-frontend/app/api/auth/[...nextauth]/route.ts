@@ -28,7 +28,11 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-
+  pages: {
+    signIn: "/",
+    error: "/",
+  },
+  
   session: {
     strategy: "jwt",
   },
@@ -56,6 +60,7 @@ const handler = NextAuth({
 
         token.backendToken = data.token;
         token.role = data.user.role ?? null;
+        token.isNewUser = data.isNewUser;
       }
 
       // 🔁 Role updated → session.update()

@@ -4,6 +4,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
+import assignmentRoutes from "./routes/assignmentRoutes.js"
 
 const app = express();
 
@@ -14,5 +15,6 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/student", studentRoutes);
 app.use("/facilitator", teacherRoutes);
+app.use("/assignments", assignmentRoutes)
 
 export default app;

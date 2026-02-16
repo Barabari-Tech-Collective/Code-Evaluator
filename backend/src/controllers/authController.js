@@ -9,18 +9,34 @@ export const googleSignup = async (req, res) => {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    const user = await prisma.user.upsert({
+    let isNewUser = false;
+
+    let user = await prisma.user.findUnique({
       where: { email },
-      update: { name },
-      create: { name, email },
     });
+
+    if(!user){
+       user = await prisma.user.create({
+        data: { name, email },
+      });
+      isNewUser = true;
+    }
+
+    // const user = await prisma.user.upsert({
+    //   where: { email },
+    //   update: { name },
+    //   create: { name, email },
+    // });
     const token = signToken({
     userId: user.id,
     email: user.email,
     role: user.role,
     });
 
-    res.status(200).json({ token, user });
+    res.status(200).json({ 
+      token,
+      user,
+      isNewUser});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Google signup failed" });

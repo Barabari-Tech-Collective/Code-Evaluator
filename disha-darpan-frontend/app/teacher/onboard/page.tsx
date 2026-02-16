@@ -1,26 +1,39 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { apiFetch } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
 
-const COLLEGES = [
-  "City College",
-  "Begumpet College",
-  "Hussaini Alam College",
-];
+// const COLLEGES = [
+//   "City College",
+//   "Begumpet College",
+//   "Hussaini Alam College",
+// ];
 
 export default function FacilitatorOnboardPage() {
-  const [selectedColleges, setSelectedColleges] = useState<string[]>([]);
+  // const [selectedColleges, setSelectedColleges] = useState<string[]>([]);
+ type College = {
+  id: string;
+  name: string;
+ };
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [selectedCollegeIds, setSelectedCollegeIds] = useState<string[]>([]);
+
+useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/colleges`)
+    .then(res => res.json())
+    .then(setColleges);
+}, []);
+
   const { data: session } = useSession();
   const router = useRouter();
 
-  const toggleCollege = (college: string) => {
-    setSelectedColleges((prev) =>
-      prev.includes(college)
-        ? prev.filter((c) => c !== college)
-        : [...prev, college]
+  const toggleCollege = (id: string) => {
+    setSelectedCollegeIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((c) => c !== id)
+        : [...prev, id]
     );
   };
 
@@ -32,12 +45,12 @@ export default function FacilitatorOnboardPage() {
         {
           method: "POST",
           body: JSON.stringify({
-            colleges: selectedColleges,
+          collegeIds: selectedCollegeIds,
           }),
         },
         session.backendToken
       );
-        router.push("/facilitator/home");
+        router.push("/teacher/home");
     } catch (err: any) {
         alert(err.message);
     }
@@ -73,33 +86,28 @@ export default function FacilitatorOnboardPage() {
 
           {/* Tiles */}
           <div className="mt-8 grid grid-cols-1 gap-4">
-            {COLLEGES.map((college) => {
-              const isSelected = selectedColleges.includes(college);
+            {colleges.map((college) => {
+  const isSelected = selectedCollegeIds.includes(college.id);
 
-              return (
-                <div
-                  key={college}
-                  onClick={() => toggleCollege(college)}
-                  className={`cursor-pointer p-4 rounded-xl border transition
-                    ${isSelected
-                      ? "border-[#334499] bg-[#FFCC33]"
-                      : "hover:border-[#334499]"
-                    }`}
-                >
-                  <p className="text-black font-medium">
-                    {college}
-                  </p>
-                </div>
-              );
-            })}
+  return (
+    <div
+      key={college.id}
+      onClick={() => toggleCollege(college.id)}
+      className={`cursor-pointer p-4 rounded-xl border
+        ${isSelected ? "bg-[#FFCC33]" : ""}`}
+    >
+      {college.name}
+    </div>
+  );
+})}
           </div>
 
           {/* Submit */}
           <button
-            disabled={selectedColleges.length === 0}
+            disabled={selectedCollegeIds.length === 0}
             onClick={handleSubmit}
             className={`w-full mt-8 py-3 rounded-xl font-medium transition
-              ${selectedColleges.length === 0
+              ${selectedCollegeIds.length === 0
                 ? "bg-gray-200 text-black opacity-60 cursor-not-allowed"
                 : "bg-[#334499] text-black hover:opacity-90"
               }`}

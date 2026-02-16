@@ -12,7 +12,9 @@ export default function SelectRolePage() {
   return <div>Loading...</div>;
   }
 
-
+  if (!session || !session.backendToken) {
+    return <div>Unauthorized</div>;
+  }
   const handleSelect = async (role: "STUDENT" | "FACILITATOR") => {
     // TODO: Save role to DB via API
     console.log("Selected role:", role);
@@ -28,7 +30,7 @@ export default function SelectRolePage() {
         {
           method: "POST",
           body: JSON.stringify({
-            email: session.user.email,
+            // email: session.user.email,
             role,
           }),
         },
@@ -41,11 +43,7 @@ export default function SelectRolePage() {
     user: { role: data.user.role },
   });
       // Redirect after role saved
-      if (role === "STUDENT") {
-        router.push("/student/onboard");
-      } else {
-        router.push("/teacher/onboard");
-      }
+      router.replace("/auth-redirect?mode=login")
     } catch (err: any) {
       alert(err.message || "Failed to save role");
     }

@@ -2,9 +2,9 @@ import prisma from "../config/prisma.js";
 
 export const studentOnboard = async (req, res) => {
   try {
-    const { name, email, college, course } = req.body;
+    const { name, email, collegeId, course } = req.body;
 
-    if (!name || !email || !college || !course) {
+    if (!name || !email || !collegeId || !course) {
       return res.status(400).json({ message: "All fields required" });
     }
 
@@ -16,11 +16,20 @@ export const studentOnboard = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Optional safety check
+    const collegeExists = await prisma.college.findUnique({
+      where: { id: collegeId },
+    });
+
+    if (!collegeExists) {
+      return res.status(400).json({ message: "Invalid college" });
+    }
+
     const student = await prisma.student.create({
       data: {
         name,
         email,
-        college,
+        collegeId,
         course,
         userId: user.id,
       },

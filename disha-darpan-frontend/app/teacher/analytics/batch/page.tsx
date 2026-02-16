@@ -1,0 +1,103 @@
+'use client';
+
+import { useState } from "react";
+import ChartCard from "../components/ChartCard";
+import ChartRenderer from "../charts/ChartsRenderer";
+import BatchFilters from "../components/BatchFilters";
+import {
+  BATCH_ASSIGNMENT_COMPARISON,
+  BATCH_MULTI_ASSIGNMENT_TREND,
+  DOMAIN_NORMALIZED_BATCH,
+} from "../data/mockData";
+
+export default function BatchAnalyticsPage() {
+  const [filters, setFilters] = useState({
+    student1: "Asiya",
+    student2: "Rahul",
+    student3: "",
+    domain: "JavaScript",
+    assignment: "",
+  });
+
+  let chartType = "EMPTY";
+  let chartData: any[] = [];
+  let title = "Batch Analytics";
+
+  //helper
+  const selectedStudents = [
+  filters.student1,
+  filters.student2,
+  filters.student3,
+].filter(Boolean);
+
+
+  // CASE 1: Multiple students → same assignment
+  if (selectedStudents.length > 1 && filters.domain && filters.assignment) {
+    title = "Peer Comparison on Assignment";
+    chartType = "BAR";
+
+    chartData =
+      BATCH_ASSIGNMENT_COMPARISON[filters.domain]?.[filters.assignment]?.filter(d => selectedStudents.includes(d.student)).map(
+        (d) => ({
+          x: d.student,
+          y: d.score,
+        })
+      ) ?? [];
+  }
+
+  // CASE 2: Multiple students → multiple assignments
+  else if (selectedStudents.length > 1 && filters.domain) {
+    title = "Batch Performance Trend";
+    chartType = "MULTI_LINE";
+
+    // chartData =
+    //   BATCH_MULTI_ASSIGNMENT_TREND[filters.domain]?.map((row) => ({
+    //     x: row.assignment,
+    //     ...row,
+    //   })) ?? [];
+    chartData =
+  BATCH_MULTI_ASSIGNMENT_TREND[filters.domain]?.map(row => {
+    const filtered: any = { x: row.assignment };
+    selectedStudents.forEach(s => {
+      filtered[s] = row[s];
+    });
+    return filtered;
+  }) ?? [];
+  }
+
+  // CASE 3: Domain-wise normalized comparison
+  // else if (selectedStudents.length > 1 && filters.domain) {
+  //   title = "Domain-wise Peer Comparison";
+  //   chartType = "BAR";
+
+  //   chartData =
+  //     DOMAIN_NORMALIZED_BATCH[filters.domain]?.map((d) => ({
+  //       x: d.student,
+  //       y: d.score,
+  //     })) ?? [];
+  // }
+
+  return (
+    <div className="flex-1 bg-white p-6 space-y-6">
+
+      <div>
+        <h1 className="text-2xl font-semibold text-[#334499]">
+          Batch Analytics
+        </h1>
+        <p className="text-sm text-gray-500">
+          Compare performance across students and assignments
+        </p>
+      </div>
+
+      <ChartCard
+        title={title}
+        rightSlot={
+          <BatchFilters filters={filters} setFilters={setFilters} />
+        }
+      >
+        <ChartRenderer type={chartType} data={chartData} />
+      </ChartCard>
+
+    </div>
+  );
+}

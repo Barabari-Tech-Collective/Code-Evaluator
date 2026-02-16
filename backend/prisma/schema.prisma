@@ -30,24 +30,66 @@ model User {
   teacher   Teacher?
 }
 
+model College {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  students  Student[]
+  teachers  TeacherCollege[]
+  assignments Assignment[]
+}
+
 model Student {
   id        String   @id @default(uuid())
   name      String
   email     String
-  college   String
   course    String
   createdAt DateTime @default(now())
 
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
+
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id])
 }
 
 model Teacher {
-  id        String   @id @default(uuid())
+  id        String           @id @default(uuid())
   name      String
-  colleges  String[]   // multiple colleges
-  createdAt DateTime @default(now())
+  userId    String           @unique
+  user User @relation(fields: [userId], references: [id])
+  colleges  TeacherCollege[]
+  assignments Assignment[]
+  createdAt DateTime         @default(now())
+}
 
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+model TeacherCollege {
+  id        String   @id @default(uuid())
+  teacherId String
+  collegeId String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  college College @relation(fields: [collegeId], references: [id])
+
+  @@unique([teacherId, collegeId])
+}
+
+
+model Assignment {
+  id             String   @id @default(cuid())
+  title          String
+  type           String
+  subject        String
+  evaluatorType  String
+  instructionUrl String
+  rubrics        String
+  deadline       DateTime
+  createdAt      DateTime @default(now())
+
+  collegeId      String
+  college        College  @relation(fields: [collegeId], references: [id])
+
+  teacherId      String
+  teacher        Teacher  @relation(fields: [teacherId], references: [id])
 }

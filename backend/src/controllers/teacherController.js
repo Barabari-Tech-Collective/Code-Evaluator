@@ -2,12 +2,12 @@ import prisma from "../config/prisma.js";
 
 export const teacherOnboard = async (req, res) => {
   try {
-    const { colleges } = req.body;
+    const { collegeIds } = req.body;
     const { userId, email } = req.user;
     console.log("this is request body", req.body);
     console.log("this is user details", req.user);
 
-    if (!email || !Array.isArray(colleges)) {
+    if (!email || !Array.isArray(collegeIds)) {
       return res.status(400).json({ message: "Invalid input" });
     }
 
@@ -22,9 +22,16 @@ export const teacherOnboard = async (req, res) => {
     const teacher = await prisma.teacher.create({
       data: {
         name: user.name,
-        colleges,
         userId: user.id,
       },
+    });
+    // Map teacher to colleges
+    await prisma.teacherCollege.createMany({
+      data: collegeIds.map((collegeId) => ({
+        teacherId: teacher.id,
+        collegeId
+      })),
+      skipDuplicates: true
     });
 
     res.status(201).json(teacher);

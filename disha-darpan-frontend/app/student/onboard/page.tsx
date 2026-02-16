@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiClient";
@@ -10,9 +10,20 @@ export default function StudentOnboardPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [name, setName] = useState("");
-  const [college, setCollege] = useState("");
+  const [colleges, setColleges] = useState<any[]>([]);
+  const [collegeId, setCollegeId] = useState("");
   const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+  const fetchColleges = async () => {
+    const data = await apiFetch("/colleges", {}, session?.backendToken);
+    setColleges(data);
+  };
+
+  if (session?.backendToken) fetchColleges();
+}, [session?.backendToken]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +39,7 @@ export default function StudentOnboardPage() {
           body: JSON.stringify({
             name: session.user.name,
             email: session.user.email,
-            college,
+            collegeId,
             course,
           }),
         },
@@ -42,7 +53,7 @@ export default function StudentOnboardPage() {
       setLoading(false);
     }
 
-    console.log({ name, college, course });
+    console.log({ name, collegeId, course });
   };
 
   return (
@@ -87,18 +98,18 @@ export default function StudentOnboardPage() {
               College
             </label>
             <select
-              required
-              value={college}
-              onChange={(e) => setCollege(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border bg-white
-                         focus:outline-none focus:ring-2
-                         focus:ring-[#334499]"
-            >
-              <option value="">Select your college</option>
-              <option value="City College">City College</option>
-              <option value="Begumpet College">Begumpet College</option>
-              <option value="Hussaini Alam College">Hussaini Alam College</option>
-            </select>
+  required
+  value={collegeId}
+  onChange={(e) => setCollegeId(e.target.value)}
+  className="w-full px-4 py-3 rounded-xl border bg-white"
+>
+  <option value="">Select your college</option>
+  {colleges.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name}
+    </option>
+  ))}
+</select>
           </div>
 
           {/* Course */}
