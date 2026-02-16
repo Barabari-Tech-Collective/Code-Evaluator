@@ -17,7 +17,7 @@ export default function StudentOnboardPage() {
 
   useEffect(() => {
   const fetchColleges = async () => {
-    const data = await apiFetch("/colleges", {}, session?.backendToken);
+    const data = await apiFetch("/colleges", {}, session?.backendToken ?? undefined);
     setColleges(data);
   };
 
