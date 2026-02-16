@@ -23,7 +23,7 @@ export default function AssignmentDetailsPage() {
         const data = await apiFetch(
           `/assignments/${assignmentId}`,
           { method: "GET" },
-          session.backendToken
+          session.backendToken ?? undefined
         );
         setAssignment(data);
       } catch (err) {
