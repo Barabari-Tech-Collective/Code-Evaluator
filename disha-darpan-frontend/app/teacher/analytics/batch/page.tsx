@@ -10,8 +10,19 @@ import {
   DOMAIN_NORMALIZED_BATCH,
 } from "../data/mockData";
 
+type Domain = keyof typeof BATCH_ASSIGNMENT_COMPARISON;
+
+type Filters = {
+  student1: string;
+  student2: string;
+  student3: string;
+  domain: Domain;
+  assignment: string;
+};
+
+
 export default function BatchAnalyticsPage() {
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     student1: "Asiya",
     student2: "Rahul",
     student3: "",
@@ -55,8 +66,7 @@ export default function BatchAnalyticsPage() {
     //     x: row.assignment,
     //     ...row,
     //   })) ?? [];
-    chartData =
-  BATCH_MULTI_ASSIGNMENT_TREND[filters.domain]?.map(row => {
+    chartData = BATCH_MULTI_ASSIGNMENT_TREND[filters.domain]?.map(row => {
     const filtered: any = { x: row.assignment };
     selectedStudents.forEach(s => {
       filtered[s] = row[s];
