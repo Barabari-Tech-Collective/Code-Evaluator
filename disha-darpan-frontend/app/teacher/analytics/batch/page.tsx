@@ -11,13 +11,16 @@ import {
 } from "../data/mockData";
 
 type Domain = keyof typeof BATCH_ASSIGNMENT_COMPARISON;
+type Assignment =
+  keyof (typeof BATCH_ASSIGNMENT_COMPARISON)[Domain];
+
 
 type Filters = {
   student1: string;
   student2: string;
   student3: string;
   domain: Domain;
-  assignment: string;
+  assignment: Assignment | "";
 };
 
 
