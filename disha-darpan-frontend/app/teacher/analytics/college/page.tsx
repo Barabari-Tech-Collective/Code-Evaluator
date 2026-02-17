@@ -12,6 +12,8 @@ import {
 type College = keyof typeof COLLEGE_DOMAIN_ASSIGNMENT_DATA;
 
 type Domain = keyof (typeof COLLEGE_DOMAIN_ASSIGNMENT_DATA)[College];
+type CrossCollegeDomain = keyof typeof CROSS_COLLEGE_DOMAIN_DATA;
+
 
 
 const COLLEGES = ["City College", "Begumpet", "HussainiAlam"];
@@ -36,11 +38,22 @@ export default function CollegeAnalyticsPage() {
   }
 
   // ===== CASE 8
+  // if (mode === "CROSS_COLLEGE") {
+  //   title = "Cross College Comparison";
+  //   data =
+  //     CROSS_COLLEGE_DOMAIN_DATA[domain] ?? [];
+  // }
   if (mode === "CROSS_COLLEGE") {
-    title = "Cross College Comparison";
+  title = "Cross College Comparison";
+
+  if (domain in CROSS_COLLEGE_DOMAIN_DATA) {
     data =
-      CROSS_COLLEGE_DOMAIN_DATA[domain] ?? [];
+      CROSS_COLLEGE_DOMAIN_DATA[
+        domain as CrossCollegeDomain
+      ] ?? [];
   }
+}
+
 
   // ===== CASE 9
   if (mode === "DOMAIN_OVERVIEW") {
