@@ -9,14 +9,19 @@ import {
   COLLEGE_DOMAIN_OVERVIEW,
 } from "../data/mockData";
 
+type College = keyof typeof COLLEGE_DOMAIN_ASSIGNMENT_DATA;
+
+type Domain = keyof (typeof COLLEGE_DOMAIN_ASSIGNMENT_DATA)[College];
+
+
 const COLLEGES = ["City College", "Begumpet", "HussainiAlam"];
 const DOMAINS = ["HTML", "CSS", "JavaScript", "React", "Backend"];
 
 type Mode = "DOMAIN_ASSIGNMENTS" | "CROSS_COLLEGE" | "DOMAIN_OVERVIEW";
 
 export default function CollegeAnalyticsPage() {
-  const [college, setCollege] = useState("City College");
-  const [domain, setDomain] = useState("JavaScript");
+  const [college, setCollege] = useState<College>("City College");
+  const [domain, setDomain] = useState<Domain>("JavaScript");
   const [mode, setMode] = useState<Mode>("DOMAIN_ASSIGNMENTS");
 
   let chartType = "BAR";
