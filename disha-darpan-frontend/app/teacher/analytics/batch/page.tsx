@@ -23,6 +23,12 @@ type Filters = {
   assignment: Assignment | "";
 };
 
+type StudentName = Exclude<
+  keyof (typeof BATCH_MULTI_ASSIGNMENT_TREND)[Domain][number],
+  "assignment"
+>;
+
+
 
 export default function BatchAnalyticsPage() {
   const [filters, setFilters] = useState<Filters>({
@@ -42,7 +48,7 @@ export default function BatchAnalyticsPage() {
   filters.student1,
   filters.student2,
   filters.student3,
-].filter(Boolean);
+].filter(Boolean) as StudentName[];
 
 
   // CASE 1: Multiple students → same assignment
@@ -70,7 +76,7 @@ export default function BatchAnalyticsPage() {
     //     ...row,
     //   })) ?? [];
     chartData = BATCH_MULTI_ASSIGNMENT_TREND[filters.domain]?.map(row => {
-    const filtered: any = { x: row.assignment };
+    const filtered: Record<string, number | string> = { x: row.assignment };
     selectedStudents.forEach(s => {
       filtered[s] = row[s];
     });
