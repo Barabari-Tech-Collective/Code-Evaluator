@@ -57,7 +57,7 @@ export default function BatchAnalyticsPage() {
     chartType = "BAR";
 
     chartData =
-      BATCH_ASSIGNMENT_COMPARISON[filters.domain]?.[filters.assignment]?.filter(d => selectedStudents.includes(d.student)).map(
+      BATCH_ASSIGNMENT_COMPARISON[filters.domain]?.[filters.assignment]?.filter((d): d is typeof d & { student: StudentName } => selectedStudents.includes(d.student as StudentName)).map(
         (d) => ({
           x: d.student,
           y: d.score,
