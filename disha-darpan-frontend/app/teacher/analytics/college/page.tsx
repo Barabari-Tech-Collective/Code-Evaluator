@@ -82,7 +82,7 @@ export default function CollegeAnalyticsPage() {
           <p className="text-xs text-gray-500 mb-1">College</p>
           <select
             value={college}
-            onChange={(e) => setCollege(e.target.value)}
+            onChange={(e) => setCollege(e.target.value as College)}
             className="px-3 py-2 rounded-lg bg-gray-50 text-sm"
           >
             {COLLEGES.map(c => (
@@ -95,7 +95,7 @@ export default function CollegeAnalyticsPage() {
           <p className="text-xs text-gray-500 mb-1">Domain</p>
           <select
             value={domain}
-            onChange={(e) => setDomain(e.target.value)}
+            onChange={(e) => setDomain(e.target.value as Domain)}
             className="px-3 py-2 rounded-lg bg-gray-50 text-sm"
           >
             {DOMAINS.map(d => (
