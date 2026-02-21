@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AuthRedirectPage() {
+function RedirectLogic() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const params = useSearchParams();
@@ -14,7 +14,6 @@ export default function AuthRedirectPage() {
     if (status !== "authenticated") return;
     if (!session) return;
 
-    // Signup → role selection
     if (mode === "signup") {
       router.replace("/select-role");
       return;
@@ -56,7 +55,7 @@ export default function AuthRedirectPage() {
               : "/student/home"
           );
         }
-      } catch (err) {
+      } catch {
         router.replace("/select-role");
       }
     };
@@ -64,9 +63,13 @@ export default function AuthRedirectPage() {
     checkProfile();
   }, [session, status, router, mode]);
 
-  if (status === "loading") {
-    return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
-  }
-
   return <div className="min-h-screen flex items-center justify-center">Redirecting…</div>;
+}
+
+export default function AuthRedirectPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}>
+      <RedirectLogic />
+    </Suspense>
+  );
 }
