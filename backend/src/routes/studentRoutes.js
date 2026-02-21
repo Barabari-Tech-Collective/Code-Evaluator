@@ -1,5 +1,5 @@
 import express from "express";
-import { studentOnboard } from "../controllers/studentController.js";
+import { checkStudentProfile, studentOnboard } from "../controllers/studentController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 
@@ -11,5 +11,7 @@ router.post(
     // authorizeRoles("STUDENT"),
     studentOnboard
 );
+
+router.get("/me", checkStudentProfile)
 
 export default router;

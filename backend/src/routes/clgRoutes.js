@@ -1,8 +1,8 @@
 import express from "express";
-import { getColleges } from "../controllers/clgController";
+import { getColleges } from "../controllers/collegeController.js";
 
 const router = express.Router();
 
-router.get('/colleges', getColleges)
+router.get('/colleges', getColleges);
 
 export default router;

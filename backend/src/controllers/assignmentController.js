@@ -48,8 +48,12 @@ export const createAssignment = async (req, res) => {
         instructionUrl,
         rubrics,
         deadline: new Date(deadline),
-        college,
-        teacherId: teacher.id,
+        college: {
+          connect: { id: college }
+        },
+        teacher: {
+      connect: { id: teacher.id },
+    },
       },
     });
 
@@ -93,8 +97,6 @@ export const getStudentAssignments = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch assignments" });
   }
 };
-
-
 export const getFacilitatorAssignments = async (req, res) => {
   try {
     const { college } = req.query;
@@ -103,7 +105,7 @@ export const getFacilitatorAssignments = async (req, res) => {
       return res.status(400).json({ message: "College is required" });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const teacher = await prisma.teacher.findUnique({
       where: { userId },
@@ -121,22 +123,25 @@ export const getFacilitatorAssignments = async (req, res) => {
       orderBy: {
         createdAt: "desc",
       },
-      select: {
-        id: true,
-        title: true,
-        type: true,
-        subject: true,
-        deadline: true,
-        createdAt: true,
+      include: {
         _count: {
-          select: {
-            submissions: true, // if you have submissions relation
-          },
+          select: { submissions: true },
         },
       },
     });
 
-    res.status(200).json(assignments);
+    // 🔥 Flatten submission count for frontend
+    const formatted = assignments.map((a) => ({
+      id: a.id,
+      title: a.title,
+      type: a.type,
+      subject: a.subject,
+      deadline: a.deadline,
+      submissions: a._count.submissions, // 👈 THIS IS IMPORTANT
+    }));
+
+    res.status(200).json(formatted);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch assignments" });

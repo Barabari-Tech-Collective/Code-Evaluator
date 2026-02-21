@@ -52,6 +52,7 @@ model Student {
 
   collegeId String
   college   College  @relation(fields: [collegeId], references: [id])
+  submissions Submission[]
 }
 
 model Teacher {
@@ -75,15 +76,17 @@ model TeacherCollege {
   @@unique([teacherId, collegeId])
 }
 
-
 model Assignment {
   id             String   @id @default(cuid())
   title          String
   type           String
   subject        String
-  evaluatorType  String
+  evaluatorType  String   // JS | RUBRIC | AI
+
   instructionUrl String
-  rubrics        String
+  rubrics        Json?    // for rubric evaluators
+  testcases      Json?    // for JS evaluator
+
   deadline       DateTime
   createdAt      DateTime @default(now())
 
@@ -92,4 +95,51 @@ model Assignment {
 
   teacherId      String
   teacher        Teacher  @relation(fields: [teacherId], references: [id])
+
+  submissions    Submission[]
+}
+
+model Submission {
+  id            String   @id @default(cuid())
+
+  assignmentId  String
+  assignment    Assignment @relation(fields: [assignmentId], references: [id])
+
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id])
+
+  s3Key         String
+  fileName      String
+  fileSize      Int
+  mimeType      String
+
+  version       Int      @default(1)
+
+  status        String   @default("PENDING") 
+  // PENDING | PROCESSING | EVALUATED | FAILED
+
+  submittedAt   DateTime @default(now())
+
+  evaluations   Evaluation[]
+
+  @@unique([assignmentId, studentId])
+}
+
+model Evaluation {
+  id            String   @id @default(cuid())
+
+  submissionId  String
+  submission    Submission @relation(fields: [submissionId], references: [id])
+
+  evaluatorType String   // JS | RUBRIC | AI
+
+  totalScore    Float
+  maxScore      Float?
+
+  feedback      String?
+
+  rubricBreakdown Json?   // for rubric evaluator
+  rawResponse     Json?   // store original evaluator response
+
+  evaluatedAt   DateTime @default(now())
 }

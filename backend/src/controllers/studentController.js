@@ -41,3 +41,20 @@ export const studentOnboard = async (req, res) => {
     res.status(500).json({ message: "Student onboarding failed" });
   }
 };
+
+export const checkStudentProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+
+    const student = await prisma.student.findUnique({
+      where: { userId },
+    });
+
+    res.json({
+      exists: !!student,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to check student profile" });
+  }
+};

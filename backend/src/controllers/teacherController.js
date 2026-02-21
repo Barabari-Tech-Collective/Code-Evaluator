@@ -20,6 +20,8 @@ export const teacherOnboard = async (req, res) => {
     }
 
     const teacher = await prisma.teacher.create({
+      // where: {userId: user.id},
+      // update: {},
       data: {
         name: user.name,
         userId: user.id,
@@ -38,5 +40,23 @@ export const teacherOnboard = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Teacher onboarding failed" });
+  }
+};
+
+
+export const checkTeacherProfile = async (req, res) => {
+  try {
+    const { userId } = req.user.userId;
+
+    const teacher = await prisma.teacher.findUnique({
+      where: { userId },
+    });
+
+    res.json({
+      exists: !!teacher,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to check teacher profile" });
   }
 };
