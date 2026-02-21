@@ -8,7 +8,6 @@ import BatchFilters from "../components/BatchFilters";
 import {
   BATCH_ASSIGNMENT_COMPARISON,
   BATCH_MULTI_ASSIGNMENT_TREND,
-  DOMAIN_NORMALIZED_BATCH,
 } from "../data/mockData";
 
 

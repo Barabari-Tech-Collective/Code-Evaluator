@@ -5,7 +5,7 @@ export default function BatchFilters({ filters, setFilters }: any) {
   const domains = Object.keys(DOMAIN_ASSIGNMENT_DATA);
   const assignments =
     filters.domain
-      ? DOMAIN_ASSIGNMENT_DATA[filters.domain]?.map(a => a.x)
+      ? DOMAIN_ASSIGNMENT_DATA[filters.domain as keyof typeof DOMAIN_ASSIGNMENT_DATA]?.map(a => a.x)
       : [];
 
   return (
