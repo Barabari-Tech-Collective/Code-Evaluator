@@ -4,6 +4,7 @@ import { useState } from "react";
 import IndividualStudentView from "../components/IndividualStudentView";
 import BatchStudentView from "../components/BatchStudentView";
 import StudentSingleSelect from "../components/StudentSingleSelect";
+import TopBar from "../components/TopBar";
 
 export default function StudentAnalyticsPage() {
   const [filters, setFilters] = useState({
@@ -11,9 +12,12 @@ export default function StudentAnalyticsPage() {
     domain: "JavaScript",
     assignment: null,
   });
+  const [college, setCollege] = useState("City College");
 
   return (
     <div className="flex-1 bg-white p-6 space-y-8">
+
+      <TopBar college={college} onCollegeChange={setCollege} />
 
       <h1 className="text-2xl font-semibold text-[#334499]">
         Student Analytics

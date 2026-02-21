@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ChartCard from "../components/ChartCard";
 import ChartRenderer from "../charts/ChartsRenderer";
+import TopBar from "../components/TopBar";
 import BatchFilters from "../components/BatchFilters";
 import {
   BATCH_ASSIGNMENT_COMPARISON,
@@ -10,9 +11,10 @@ import {
   DOMAIN_NORMALIZED_BATCH,
 } from "../data/mockData";
 
+
 type Domain = keyof typeof BATCH_ASSIGNMENT_COMPARISON;
 type Assignment =
-  keyof (typeof BATCH_ASSIGNMENT_COMPARISON)[Domain];
+keyof (typeof BATCH_ASSIGNMENT_COMPARISON)[Domain];
 
 
 type Filters = {
@@ -24,13 +26,14 @@ type Filters = {
 };
 
 type StudentName = Exclude<
-  keyof (typeof BATCH_MULTI_ASSIGNMENT_TREND)[Domain][number],
-  "assignment"
+keyof (typeof BATCH_MULTI_ASSIGNMENT_TREND)[Domain][number],
+"assignment"
 >;
 
 
 
 export default function BatchAnalyticsPage() {
+  const [college, setCollege] = useState("City College");
   const [filters, setFilters] = useState<Filters>({
     student1: "Asiya",
     student2: "Rahul",
@@ -38,15 +41,15 @@ export default function BatchAnalyticsPage() {
     domain: "JavaScript",
     assignment: "",
   });
-
+  
   let chartType = "EMPTY";
   let chartData: any[] = [];
   let title = "Batch Analytics";
-
+  
   //helper
   const selectedStudents = [
-  filters.student1,
-  filters.student2,
+    filters.student1,
+    filters.student2,
   filters.student3,
 ].filter(Boolean) as StudentName[];
 
@@ -55,16 +58,16 @@ export default function BatchAnalyticsPage() {
   if (selectedStudents.length > 1 && filters.domain && filters.assignment) {
     title = "Peer Comparison on Assignment";
     chartType = "BAR";
-
+    
     chartData =
-      BATCH_ASSIGNMENT_COMPARISON[filters.domain]?.[filters.assignment]?.filter((d): d is typeof d & { student: StudentName } => selectedStudents.includes(d.student as StudentName)).map(
-        (d) => ({
-          x: d.student,
-          y: d.score,
-        })
-      ) ?? [];
+    BATCH_ASSIGNMENT_COMPARISON[filters.domain]?.[filters.assignment]?.filter((d): d is typeof d & { student: StudentName } => selectedStudents.includes(d.student as StudentName)).map(
+      (d) => ({
+        x: d.student,
+        y: d.score,
+      })
+    ) ?? [];
   }
-
+  
   // CASE 2: Multiple students → multiple assignments
   else if (selectedStudents.length > 1 && filters.domain) {
     title = "Batch Performance Trend";
@@ -98,6 +101,8 @@ export default function BatchAnalyticsPage() {
 
   return (
     <div className="flex-1 bg-white p-6 space-y-6">
+
+      <TopBar college={college} onCollegeChange={setCollege} />
 
       <div>
         <h1 className="text-2xl font-semibold text-[#334499]">

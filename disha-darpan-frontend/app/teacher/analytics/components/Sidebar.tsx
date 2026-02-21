@@ -8,6 +8,7 @@ const items = [
   { label: "Student Analytics", path: "/teacher/analytics/student", icon: Users },
   { label: "Batch Analytics", path: "/teacher/analytics/batch", icon: Users2 },
   { label: "College Overview", path: "/teacher/analytics/college", icon: BarChart3 },
+  { label: "Attendance", path: "/teacher/analytics/attendance", icon: BarChart3 },
 ];
 
 export default function Sidebar() {

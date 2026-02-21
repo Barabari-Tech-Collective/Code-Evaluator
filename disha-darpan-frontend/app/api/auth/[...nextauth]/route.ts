@@ -45,7 +45,7 @@ const handler = NextAuth({
       // 🔐 First-time Google login
       if (account && user) {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/google`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -1,3 +1,5 @@
+import { signOut } from "next-auth/react"
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -22,7 +24,9 @@ export default function ProfileModal({ open, onClose }: Props) {
           Edit Profile
         </button>
 
-        <button className="mt-2 w-full py-2 rounded-lg bg-[#334499] text-white">
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="mt-2 w-full py-2 rounded-lg bg-[#334499] text-white">
           Logout
         </button>
 

@@ -21,7 +21,7 @@ export default function FacilitatorOnboardPage() {
   const [selectedCollegeIds, setSelectedCollegeIds] = useState<string[]>([]);
 
 useEffect(() => {
-  fetch(`${process.env.NEXT_PUBLIC_API_URL}/colleges`)
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/colleges`)
     .then(res => res.json())
     .then(setColleges);
 }, []);

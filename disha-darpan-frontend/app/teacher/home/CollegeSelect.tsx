@@ -1,5 +1,5 @@
 type Props = {
-  colleges: string[];
+  colleges: { id: string; name: string }[];
   selected: string;
   onChange: (value: string) => void;
 };
@@ -14,8 +14,8 @@ export default function CollegeSelect({ colleges, selected, onChange }: Props) {
                  focus:outline-none focus:ring-2 focus:ring-[#334499]"
     >
       {colleges.map(c => (
-        <option key={c} value={c}>
-          {c}
+        <option key={c.id} value={c.id}>
+          {c.name}
         </option>
       ))}
     </select>
