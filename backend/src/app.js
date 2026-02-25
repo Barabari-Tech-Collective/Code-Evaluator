@@ -8,6 +8,7 @@ import teacherRoutes from "./routes/teacherRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js"
 import evaluationRoutes from "./routes/evaluationRoutes.js"
 import attendanceRoutes from "./routes/attendanceRoutes.js"
+import submissionRoutes from "./routes/submissionRoutes.js"
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/facilitator", teacherRoutes);
 app.use("/assignments", assignmentRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/evaluation", evaluationRoutes);
+app.use("/api/submissions", submissionRoutes)
 app.use("/api", clgRoutes);
 
 export default app;

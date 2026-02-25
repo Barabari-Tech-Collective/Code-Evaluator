@@ -4,7 +4,7 @@ export const createSubmission = async (req, res) => {
   try {
     const { assignmentId, student, repoLink, language } = req.body;
 
-    // 🔹 Basic validation
+    // Basic validation
     if (
       !assignmentId ||
       !student?.id ||
@@ -16,7 +16,7 @@ export const createSubmission = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // 🔹 Validate assignment exists
+    // Validate assignment exists
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
     });
@@ -25,7 +25,7 @@ export const createSubmission = async (req, res) => {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // 🔹 Validate college exists
+    // Validate college exists
     const college = await prisma.college.findUnique({
       where: { id: student.collegeId },
     });
@@ -34,7 +34,7 @@ export const createSubmission = async (req, res) => {
       return res.status(404).json({ message: "College not found" });
     }
 
-    // 🔹 Upsert student (update if exists, create if new)
+    // Upsert student (update if exists, create if new)
     await prisma.student.upsert({
       where: { id: student.id },
       update: {
@@ -55,7 +55,7 @@ export const createSubmission = async (req, res) => {
       },
     });
 
-    // 🔹 Keep only latest submission (one per assignment per student)
+    // Keep only latest submission (one per assignment per student)
     await prisma.submission.deleteMany({
       where: {
         assignmentId,
@@ -63,7 +63,7 @@ export const createSubmission = async (req, res) => {
       },
     });
 
-    // 🔹 Create new submission
+    // Create new submission
     const submission = await prisma.submission.create({
       data: {
         assignmentId,

@@ -45,6 +45,7 @@ model Student {
   name      String
   email     String
   course    String
+  year      String?
   createdAt DateTime @default(now())
 
   userId    String   @unique
@@ -108,12 +109,8 @@ model Submission {
   studentId     String
   student       Student  @relation(fields: [studentId], references: [id])
 
-  s3Key         String
-  fileName      String
-  fileSize      Int
-  mimeType      String
-
-  version       Int      @default(1)
+  repoLink      String
+  language      String?
 
   status        String   @default("PENDING") 
   // PENDING | PROCESSING | EVALUATED | FAILED
