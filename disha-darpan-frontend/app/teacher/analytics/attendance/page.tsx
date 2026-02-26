@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/apiClient";
 
 interface Student {
   name: string;
@@ -30,10 +31,13 @@ export default function AttendancePage() {
 
     const fetchAttendance = async () => {
       setLoading(true);
-      const res = await fetch(
+      // const res = await fetch(
+      //   `/api/attendance?collegeId=${collegeId}`
+      // );
+      // const data = await res.json();
+      const data = await apiFetch(
         `/api/attendance?collegeId=${collegeId}`
       );
-      const data = await res.json();
       setAttendance(data || []);
       setLoading(false);
     };
