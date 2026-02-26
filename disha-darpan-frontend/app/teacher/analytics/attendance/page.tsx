@@ -34,7 +34,7 @@ export default function AttendancePage() {
         `/api/attendance?collegeId=${collegeId}`
       );
       const data = await res.json();
-      setAttendance(data.data || []);
+      setAttendance(data || []);
       setLoading(false);
     };
 
