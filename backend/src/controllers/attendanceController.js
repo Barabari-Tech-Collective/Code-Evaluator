@@ -18,8 +18,13 @@ export const getAttendance = async (req, res) => {
 
     return res.json(response.data);
 
-  } catch (error) {
-    console.error("DISHA ATTENDANCE ERROR:", error.message);
-    return res.status(500).json({ error: "Failed to fetch attendance" });
-  }
+  }catch (error) {
+  console.error("FULL ERROR:", error.response?.status, error.response?.data);
+  return res.status(error.response?.status || 500).json({
+    error: error.response?.data || "Failed to fetch attendance"
+  });
+  // catch (error) {
+  //   console.error("DISHA ATTENDANCE ERROR:", error.message);
+  //   return res.status(500).json({ error: "Failed to fetch attendance" });
+  // }
 };
