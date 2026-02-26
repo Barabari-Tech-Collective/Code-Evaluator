@@ -14,6 +14,7 @@ export const getAttendance = async (req, res) => {
         params: { collegeId }
       }
     );
+    console.log("this data disha is getting", response.data)
 
     return res.json(response.data);
 
