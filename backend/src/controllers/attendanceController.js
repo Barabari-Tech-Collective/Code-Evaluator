@@ -27,4 +27,5 @@ export const getAttendance = async (req, res) => {
   //   console.error("DISHA ATTENDANCE ERROR:", error.message);
   //   return res.status(500).json({ error: "Failed to fetch attendance" });
   // }
+}
 };
