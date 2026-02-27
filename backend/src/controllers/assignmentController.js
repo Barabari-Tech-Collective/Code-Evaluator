@@ -1,68 +1,155 @@
 import prisma from "../config/prisma.js";
 
+
 export const createAssignment = async (req, res) => {
   try {
     const {
       title,
       type,
       subject,
+      unit,              // ✅ NEW
       evaluatorType,
-      instructionUrl,
+      instruction,       // ✅ Single field (URL or plain text)
       rubrics,
       deadline,
       college,
     } = req.body;
-    console.log("Req user", req.user);
 
-    const { userId } = req.user; // coming from JWT middleware
+    const { userId } = req.user;
 
-    if (
-      !title ||
-      !type ||
-      !subject ||
-      !college ||
-      !deadline
-    ) {
+    // Basic validation
+    if (!title || !type || !subject || !college || !deadline) {
       return res.status(400).json({ message: "Invalid input" });
     }
 
-    console.log("User Id from teacher lookup", userId);
-
-
+    // Check teacher
     const teacher = await prisma.teacher.findUnique({
-      where: { 
-        userId: userId
-      },
+      where: { userId },
     });
 
     if (!teacher) {
       return res.status(403).json({ message: "Not a teacher" });
     }
 
+    // Create assignment in DISHA DB first
     const assignment = await prisma.assignment.create({
       data: {
         title,
         type,
         subject,
+        unit,                  // ✅ NEW
         evaluatorType,
-        instructionUrl,
+        instruction,           // ✅ single field
         rubrics,
         deadline: new Date(deadline),
         college: {
-          connect: { id: college }
+          connect: { id: college },
         },
         teacher: {
-      connect: { id: teacher.id },
-    },
+          connect: { id: teacher.id },
+        },
+      },
+      include: {
+        college: true, // needed to get externalId
       },
     });
 
-    res.status(201).json(assignment);
+    /**
+     * Sync to Code Guru
+     * Important: This should NOT break assignment creation
+     */
+    try {
+      await axios.post(
+        `${process.env.CODE_GURU_BASE_URL}/api/external/assignments`,
+        {
+          external_assignment_id: assignment.id,
+          title: assignment.title,
+          type: assignment.type,
+          subject: assignment.subject,
+          unit: assignment.unit,
+          evaluatorType: assignment.evaluatorType,
+          instruction: assignment.instruction,
+          rubrics: assignment.rubrics,
+          deadline: assignment.deadline,
+          college_external_id: assignment.college.externalId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CODE_GURU_SECRET}`,
+          },
+        }
+      );
+    } catch (syncError) {
+      console.error("Assignment sync failed:", syncError.message);
+      // Do NOT throw error — assignment already created
+    }
+
+    return res.status(201).json(assignment);
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Assignment creation failed" });
+    console.error("Assignment creation failed:", err);
+    return res.status(500).json({ message: "Assignment creation failed" });
   }
 };
+// export const createAssignment = async (req, res) => {
+//   try {
+//     const {
+//       title,
+//       type,
+//       subject,
+//       evaluatorType,
+//       instructionUrl,
+//       rubrics,
+//       deadline,
+//       college,
+//     } = req.body;
+//     console.log("Req user", req.user);
+
+//     const { userId } = req.user; // coming from JWT middleware
+
+//     if (
+//      input data
+//     ) {
+//       return res.status(400).json({ message: "Invalid input" });
+//     }
+
+//     console.log("User Id from teacher lookup", userId);
+
+
+//     const teacher = await prisma.teacher.findUnique({
+//       where: { 
+//         userId: userId
+//       },
+//     });
+
+//     if (!teacher) {
+//       return res.status(403).json({ message: "Not a teacher" });
+//     }
+
+//     const assignment = await prisma.assignment.create({
+//       data: {
+//         title,
+//         type,
+//         subject,
+//         evaluatorType,
+//         instructionUrl,
+//         rubrics,
+//         deadline: new Date(deadline),
+//         college: {
+//           connect: { id: college }
+//         },
+//         teacher: {
+//       connect: { id: teacher.id },
+//     },
+//       },
+//     });
+
+//     res.status(201).json(assignment);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Assignment creation failed" });
+//   }
+// };
 
 
 export const getStudentAssignments = async (req, res) => {

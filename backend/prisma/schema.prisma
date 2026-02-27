@@ -82,9 +82,10 @@ model Assignment {
   title          String
   type           String
   subject        String
+  unit           String?
   evaluatorType  String   // JS | RUBRIC | AI
 
-  instructionUrl String
+  instruction    String
   rubrics        Json?    // for rubric evaluators
   testcases      Json?    // for JS evaluator
 
