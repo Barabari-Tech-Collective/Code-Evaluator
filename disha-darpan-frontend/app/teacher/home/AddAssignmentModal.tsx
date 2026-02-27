@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -10,12 +10,28 @@ export default function AddAssignmentModal({
   onCreated,
   college,
 }: any) {
-  const { data: session } = useSession();
+  const unitOptions: Record<string, string[]> = {
+    JavaScript: [
+      "Unit 1",
+      "Unit 2",
+      "Unit 3",
+      "Unit 4",
+      "Unit 5",
+      "Unit 6",
+      "Unit 7",
+    ],
+    HTML: ["Unit 1", "Unit 2"],
+    CSS: ["Unit 1", "Unit 2", "Unit 3"],
+    React: ["Unit 1", "Unit 2", "Unit 3"],
+    Backend: ["Unit 1", "Unit 2", "Unit 3", "Unit 4"],
+  };
 
+  const { data: session } = useSession();
+  const [unit, setUnit] = useState("");
   const [title, setTitle] = useState("");
-  const [type, setType] = useState("MICRO");
+  const [type, setType] = useState("ASSIGNMENT");
   const [subject, setSubject] = useState("HTML");
-  const [instructionUrl, setInstructionUrl] = useState("");
+  const [instruction, setInstruction] = useState("");
   const [rubrics, setRubrics] = useState("");
   const [evaluatorType, setEvaluatorType] = useState("JS Evaluator");
   const [deadline, setDeadline] = useState("");
@@ -35,8 +51,9 @@ export default function AddAssignmentModal({
       title,
       type,
       subject,
+      unit,
       evaluatorType,
-      instructionUrl,
+      instruction,
       rubrics,
       deadline,
       college,
@@ -49,7 +66,7 @@ export default function AddAssignmentModal({
           method: "POST",
           body: JSON.stringify(payload),
         },
-        session.backendToken
+        session.backendToken,
       );
 
       onCreated(newAssignment);
@@ -64,13 +81,9 @@ export default function AddAssignmentModal({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-full max-w-lg p-6">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Create Assignment
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">Create Assignment</h2>
 
         <div className="space-y-3 text-sm">
-
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -83,8 +96,7 @@ export default function AddAssignmentModal({
             onChange={(e) => setType(e.target.value)}
             className="w-full border rounded-lg px-3 py-2"
           >
-            <option value="MICRO">MICRO</option>
-            <option value="UNIT">UNIT</option>
+            <option value="ASSIGNMENT">Assignment</option>
             <option value="CAPSTONE">CAPSTONE</option>
           </select>
 
@@ -100,9 +112,22 @@ export default function AddAssignmentModal({
             <option>Backend</option>
           </select>
 
+          <select
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          >
+            <option value="">Select Unit</option>
+            {unitOptions[subject]?.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </select>
+
           <input
-            value={instructionUrl}
-            onChange={(e) => setInstructionUrl(e.target.value)}
+            value={instruction}
+            onChange={(e) => setInstruction(e.target.value)}
             placeholder="Instruction Document URL"
             className="w-full border rounded-lg px-3 py-2"
           />
@@ -134,10 +159,7 @@ export default function AddAssignmentModal({
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 py-2 border rounded-lg"
-          >
+          <button onClick={onClose} className="flex-1 py-2 border rounded-lg">
             Cancel
           </button>
 
